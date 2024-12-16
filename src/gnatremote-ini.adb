@@ -40,7 +40,7 @@ separate (GnatRemote) package body Ini is
    begin
 
       --  Settings
-      Prg.Set_Version (0, 6);
+      Prg.Set_Version (0, 8);
 
       Prg.Set_Handler_Ctrl_C (On);
       Sys.Set_Memory_Monitor (On);
@@ -69,14 +69,20 @@ separate (GnatRemote) package body Ini is
                          Switch => "-a=",
                          Long_Switch => "--action=",
                          Argument => "Action command",
-                         Help => "Action to perform");
+                         Help =>                              "dev_save_copy_build_fast_restart|" & To_Latin_1 (CRLF) &
+                                 "                             prod_save_copy_build_fast_restart|" & To_Latin_1 (CRLF) &
+                                 "                             dev_save_copy_build_full_restart|" & To_Latin_1 (CRLF) &
+                                 "                             prod_save_copy_build_full_restart" & To_Latin_1 (CRLF)
+                         );
 
       GCL.Define_Switch (GCL_Config, Gcl_Check_Error_Trace'Access,
                          Switch => "-e",
                          Long_Switch => "--check-error-trace",
-                         Help => "Check .err trace raising an exception");
+                         Help => "Check .err trace raising an exception" & To_Latin_1 (CRLF));
 
       GCL.Getopt (GCL_Config); --  Command line processing
+
+      --  Arguments processing
 
       Config.Action := From_Latin_1 (Gcl_Action.all);
 
@@ -99,6 +105,9 @@ separate (GnatRemote) package body Ini is
             Cfg.Comment ("");
             Cfg.Comment ("-----------------------------------------------------------------------------");
             Cfg.New_Line;
+            Cfg.Comment ("All paths are relative apart Build_Dir and Run_Dir");
+            Cfg.New_Line;
+
             --  Per section, reverse order in code as insert is allways done at the beginning of a section
 
             Cfg.Set ("Project", "Name", "hex01");
@@ -157,8 +166,8 @@ separate (GnatRemote) package body Ini is
          Config.Remote_User := Cfg.Get ("Remote", "User");
          Config.Remote_Build_Dir := Cfg.Get ("Remote", "Build_Dir") & "/" & Config.Project_Name;
          Config.Remote_Run_Dir := Cfg.Get ("Remote", "Run_Dir") & "/" & Config.Project_Name;
-         Config.Remote_Dev_Dir := Config.Remote_Run_Dir & "/" & Cfg.Get ("Remote", "Dev_Dir");
-         Config.Remote_Prod_Dir := Config.Remote_Run_Dir & "/" & Cfg.Get ("Remote", "Prod_Dir");
+         Config.Remote_Dev_Dir := Cfg.Get ("Remote", "Dev_Dir");
+         Config.Remote_Prod_Dir := Cfg.Get ("Remote", "Prod_Dir");
 
          Msg.Info (Prg.Name & ".Init.App > Configuration file ../" & Tail_After_Match (Cfg.Get_Name, '/') & " loaded");
 

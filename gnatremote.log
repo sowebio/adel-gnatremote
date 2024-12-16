@@ -1,0 +1,57 @@
+20240630-143727.193 - INIT    - MSG - gnatremote.Init.App > Configuration file /home/sr/Sowebio/informatique/dev/gpl/github/adel-gnatremote/gnatremote.cfg has been created
+20240630-143727.195 - INIT    - MSG - gnatremote.Init.App > Configuration file ../gnatremote.cfg loaded
+
+20240630-143727.195 - ACTION  - MSG - GNATREMOTE.MAIN > PARAMETERS--------------------
+20240630-143727.195 - ACTION  - MSG - Local directory: /home/sr/Sowebio/informatique/dev/gpl/github/adel-gnatremote
+20240630-143727.196 - ACTION  - MSG - Action required: dev_save_copy_build_fast_restart
+20240630-143727.196 - ACTION  - MSG - Source directory: /home/sr/Sowebio/informatique/dev/gpl/github/adel-gnatremote
+20240630-143727.196 - ACTION  - MSG - Remote build directory:    root@id.domain.tld/root/build/hex01
+20240630-143727.196 - ACTION  - MSG - Remote run dev directory:  root@id.domain.tld//opt/hex01/dev
+20240630-143727.197 - ACTION  - MSG - Remote run prod directory: root@id.domain.tld//opt/hex01/prod
+20240630-143727.197 - ACTION  - MSG - GNATREMOTE.COPY_COMMON > COPY COMMON PROJECT SOURCES
+20240630-143727.198 - ACTION  - MSG - Net.Rsync > Excluding: .*
+20240630-143727.198 - ACTION  - MSG - Net.Rsync > Excluding: bin
+20240630-143727.198 - ACTION  - MSG - Net.Rsync > Excluding: obj
+20240630-143727.254 - ACTION  - MSG - Net.Rsync > Directory_Rx don't exists, create it
+20240630-143727.367 - ACTION  - ERR - Net.Send_Command > Command error with: ssh -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@id.domain.tld "mkdir --parents /root/build/hex01/hex01" on root@id.domain.tld Error:  65280
+20240630-143727.418 - ACTION  - ERR - Net.Rsync > Rsync error with: rsync  -e "ssh -q -o StrictHostKeyChecking=no" -a --exclude '.*' --exclude 'bin' --exclude 'obj' /home/sr/Sowebio/informatique/dev/gpl/github/adel-gnatremote/../hex01/ root@id.domain.tld:/root/build/hex01/hex01 to root@id.domain.tld Error:  65280
+20240630-143727.418 - ACTION  - MSG - GNATREMOTE.COPY_SRC > COPY BUILD FILES AND PROGRAM SOURCES
+20240630-143727.419 - ACTION  - MSG - Net.Rsync > Excluding: .*
+20240630-143727.419 - ACTION  - MSG - Net.Rsync > Excluding: bin
+20240630-143727.419 - ACTION  - MSG - Net.Rsync > Excluding: obj
+20240630-143727.470 - ACTION  - MSG - Net.Rsync > Directory_Rx don't exists, create it
+20240630-143727.532 - ACTION  - ERR - Net.Send_Command > Command error with: ssh -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@id.domain.tld "mkdir --parents /root/build/hex01/project_name" on root@id.domain.tld Error:  65280
+20240630-143727.582 - ACTION  - ERR - Net.Rsync > Rsync error with: rsync  -e "ssh -q -o StrictHostKeyChecking=no" -a --exclude '.*' --exclude 'bin' --exclude 'obj' /home/sr/Sowebio/informatique/dev/gpl/github/adel-gnatremote/ root@id.domain.tld:/root/build/hex01/project_name to root@id.domain.tld Error:  65280
+20240630-143727.583 - ACTION  - MSG - GNATREMOTE.COPY_LIB > COPY LIBRARIES SOURCES----
+20240630-143727.583 - ACTION  - MSG - Net.Rsync > Excluding: .*
+20240630-143727.584 - ACTION  - MSG - Net.Rsync > Excluding: tools
+20240630-143727.584 - ACTION  - MSG - Net.Rsync > Excluding: bin
+20240630-143727.584 - ACTION  - MSG - Net.Rsync > Excluding: obj
+20240630-143727.585 - ACTION  - MSG - Net.Rsync > Excluding: src
+20240630-143727.695 - ACTION  - MSG - Net.Rsync > Directory_Rx don't exists, create it
+20240630-143727.831 - ACTION  - ERR - Net.Send_Command > Command error with: ssh -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@id.domain.tld "mkdir --parents /root/build/hex01/v22" on root@id.domain.tld Error:  65280
+20240630-143727.898 - ACTION  - ERR - Net.Rsync > Rsync error with: rsync  -e "ssh -q -o StrictHostKeyChecking=no" -a --exclude '.*' --exclude 'tools' --exclude 'bin' --exclude 'obj' --exclude 'src' /home/sr/Sowebio/informatique/dev/gpl/github/adel-gnatremote/../v22/ root@id.domain.tld:/root/build/hex01/v22 to root@id.domain.tld Error:  65280
+20240630-143727.899 - ACTION  - MSG - GNATREMOTE.BUILD > PROJECT_NAME-----------------
+20240630-143727.948 - ACTION  - MSG - /root/build/hex01/project_name/bin/project_name not found and therefore not deleted
+20240630-143727.997 - ACTION  - ERR - Net.Send_Command > Command error with: ssh -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@id.domain.tld "cd /root/build/hex01/project_name ; alr build ; ls -l ./bin" > /tmp/20240630-143727.948942000-v22-net-command.output on root@id.domain.tld Error:  65280
+20240630-143727.997 - ACTION  - MSG - GNATREMOTE.RESTART > PROJECT_NAME---------------
+20240630-143728.056 - ACTION  - ERR - Net.Send_Command > Command error with: ssh -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@id.domain.tld "systemctl stop project_name_/opt/hex01/dev" > /tmp/20240630-143727.998133000-v22-net-command.output on root@id.domain.tld Error:  65280
+20240630-143728.056 - ACTION  - ERR - gnatremote.Restart > systemctl stop project_name_/opt/hex01/dev failed
+
+20240630-143728.057 - EXIT    - MSG - Total execution time: 0h00m02s
+
+20241120-123856.726 - INIT    - MSG - gnatremote.Init.App > Configuration file ../gnatremote.cfg loaded
+
+20241120-123856.726 - ACTION  - MSG - GNATREMOTE.MAIN > PARAMETERS--------------------
+20241120-123856.727 - ACTION  - MSG - Local directory: /home/sr/Sowebio/informatique/dev/gpl/github/adel-gnatremote
+20241120-123856.727 - ACTION  - MSG - Action required: 
+20241120-123856.727 - ACTION  - MSG - Source directory: /home/sr/Sowebio/informatique/dev/gpl/github/adel-gnatremote
+20241120-123856.727 - ACTION  - MSG - Remote build directory:    root@id.domain.tld/root/build/hex01
+20241120-123856.727 - ACTION  - MSG - Remote run dir directory:  root@id.domain.tld//opt/hex01
+20241120-123856.728 - ACTION  - MSG - Remote run dev directory:  root@id.domain.tld//opt/hex01/dev
+20241120-123856.728 - ACTION  - MSG - Remote run prod directory: root@id.domain.tld//opt/hex01/prod
+20241120-123856.728 - ACTION  - MSG - No action given
+20241120-123856.728 - ACTION  - MSG - Action successful
+
+20241120-123857.832 - EXIT    - MSG - Total execution time: 0h00m01s
+

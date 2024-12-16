@@ -17,6 +17,37 @@
 --  See git log
 ------------------------------------------------------------------------------
 
+-- Build tree (simplified)
+--
+--  /root
+--  └── build
+--      └── hex01         Project root
+--          ├── alire
+--          ├── hex01     Directory gathering common sources, must have the project name
+--          ├── hex01_net Net program folder
+--          │   ├── alire
+--          │   ├── obj
+--          │   ├── prg
+--          │   └── src
+--          ├── hex01_tsk Tsk program folder
+--          │   ├── alire
+--          │   ├── config
+--          │   ├── obj
+--          │   ├── prg
+--          │   └── src
+--          ├── hex01_web Web program folder
+--          │   ├── alire
+--          │   ├── obj
+--          │   ├── prg
+--          │   └── src
+--          ├── prg
+--          ├── src
+--          └── v22
+--              ├── alire
+--              ├── lib
+--              └── prg
+--
+--
 --  Execution tree dev & prod
 --
 --  /opt
@@ -35,37 +66,7 @@
 --          ├── img
 --          ├── js
 --          └── sys           Systemd services files
---
---
--- Build tree (simplified)
---
---  /root
---  └── build
---      └── hex01         Project root
---          ├── alire
---          ├── hex01     Directory gathering common sources, must have the project name
---          ├── hex01_net dossier net
---          │   ├── alire
---          │   ├── obj
---          │   ├── prg
---          │   └── src
---          ├── hex01_tsk dossier tsk
---          │   ├── alire
---          │   ├── config
---          │   ├── obj
---          │   ├── prg
---          │   └── src
---          ├── hex01_web dossier web
---          │   ├── alire
---          │   ├── obj
---          │   ├── prg
---          │   └── src
---          ├── prg
---          ├── src
---          └── v22
---              ├── alire
---              ├── lib
---              └── prg
+
 
 --  # -----------------------------------------------------------------------------
 --  #  gnatremote.cfg - Configuration file
@@ -151,15 +152,12 @@ procedure GnatRemote is
 
    type Config_Type is record
       Project_Name : String;
-
       Program_Name : String;
       Program_Sources_Dir : String;
       Program_Libraries_Dir : String;
       Program_Objects_Dir : String;
       Program_Binary_Dir : String;
-
       Local_Beep : String;
-
       Remote_Host : String;
       Remote_User : String;
       Remote_Build_Dir : String;
@@ -203,7 +201,7 @@ procedure GnatRemote is
    begin
       Msg.Title (Prg.Name & ".Copy_Common > Copy common project sources");
 
-      --  Copy relative directory (../src) gathering common sources from root project directory"
+      --  Copy relative directory (../src) gathering common sources from root project directory
       Dummy := Net.Copy_Rsync (Target => Config.Remote_User & "@" & Config.Remote_Host,
       -- <root program>/../
                                Directory_Tx => Prg.Start_Dir & "/../" & Config.Project_Name & "/",
@@ -292,40 +290,44 @@ procedure GnatRemote is
       Command : String;
       Output : String;
    begin
-      Msg.Title (Prg.Name & ".Restart > " & Config.Program_Name);
 
-      if Net.Command (Config.Remote_User & "@" & Config.Remote_Host,
-                             "systemctl stop " & Config.Program_Name & "_" & Destination, Output) then
-         if not Is_Empty (Output) then
-            Tio.Put_Line (Output);
-         end if;
+      if Index (Config.Remote_Run_Dir, "none") = 0 then
+         Msg.Title (Prg.Name & ".Restart > " & Config.Program_Name);
 
-         -- cp --force /root/build/hex01/hex01_net/prg/hex01_net /opt/hex01/hex01_net_dev on root@id.domain.tld successful
-         Command := "cp --force " & --  Tx
-                                    Config.Remote_Build_Dir   & "/" & Config.Program_Name & "/" &
-                                    Config.Program_Binary_Dir & "/" & Config.Program_Name & " " &
-                                    --  Rx
-                                    Config.Remote_Run_Dir     & "/" & Destination & "/" &
-                                    Config.Program_Name & "_" & Destination;
-
-         if Net.Command (Config.Remote_User & "@" & Config.Remote_Host, Command, Output) then
+         if Net.Command (Config.Remote_User & "@" & Config.Remote_Host,
+                         "systemctl stop " & Config.Program_Name & "_" & Destination, Output) then
             if not Is_Empty (Output) then
                Tio.Put_Line (Output);
             end if;
-            if Net.Command (Config.Remote_User & "@" & Config.Remote_Host,
-                                  "systemctl start " & Config.Program_Name & "_" & Destination, Output) then
+            -- cp --force /root/build/hex01/hex01_net/prg/hex01_net /opt/hex01/hex01_net_dev on root@id.domain.tld successful
+            Command := "cp --force " & --  Tx
+              Config.Remote_Build_Dir   & "/" & Config.Program_Name & "/" &
+              Config.Program_Binary_Dir & "/" & Config.Program_Name & " " &
+            --  Rx
+              Config.Remote_Run_Dir     & "/" & Destination & "/" &
+              Config.Program_Name & "_" & Destination;
+
+            if Net.Command (Config.Remote_User & "@" & Config.Remote_Host, Command, Output) then
                if not Is_Empty (Output) then
-                 Tio.Put_Line (Output);
+                  Tio.Put_Line (Output);
                end if;
-               Result := True;
+               if Net.Command (Config.Remote_User & "@" & Config.Remote_Host,
+                               "systemctl start " & Config.Program_Name & "_" & Destination, Output) then
+                  if not Is_Empty (Output) then
+                     Tio.Put_Line (Output);
+                  end if;
+                  Result := True;
+               else
+                  Msg.Error (Prg.Name & ".Restart > systemctl start " & Config.Program_Name & "_" & Destination &" failed");
+               end if;
             else
-               Msg.Error (Prg.Name & ".Restart > systemctl start " & Config.Program_Name & "_" & Destination &" failed");
+               Msg.Error (Prg.Name & ".Restart > " & Command & " failed");
             end if;
          else
-            Msg.Error (Prg.Name & ".Restart > " & Command & " failed");
+            Msg.Error (Prg.Name & ".Restart > systemctl stop " & Config.Program_Name & "_" & Destination & " failed");
          end if;
       else
-         Msg.Error (Prg.Name & ".Restart > systemctl stop " & Config.Program_Name & "_" & Destination & " failed");
+         Result := True;
       end if;
 
       return Result;
@@ -348,18 +350,20 @@ begin
       Msg.Info ("Local directory: " & Prg.Start_Dir);
       Msg.Info ("Action required: " & Config.Action);
       Msg.Info ("Source directory: " & Prg.Start_Dir);
-      Msg.Info ("Remote build directory:    " & Config.Remote_User & "@" & Config.Remote_Host & "/" & Config.Remote_Build_Dir);
+
+      Msg.Info ("Remote build directory:    " & Config.Remote_User & "@" & Config.Remote_Host &       Config.Remote_Build_Dir);
+      Msg.Info ("Remote run dir directory:  " & Config.Remote_User & "@" & Config.Remote_Host &       Config.Remote_Run_Dir);
       Msg.Info ("Remote run dev directory:  " & Config.Remote_User & "@" & Config.Remote_Host & "/" & Config.Remote_Dev_Dir);
       Msg.Info ("Remote run prod directory: " & Config.Remote_User & "@" & Config.Remote_Host & "/" & Config.Remote_Prod_Dir);
 
       if Config.Action = "dev_save_copy_build_fast_restart" then
-         Result := Copy_Common and Copy_Src and Copy_Lib and Build ("fast") and Restart ("dev");
+         Result := Copy_Common and Copy_Src and Copy_Lib and Build ("fast") and Restart (Config.Remote_Dev_Dir);
       elsif Config.Action = "prod_save_copy_build_fast_restart" then
-         Result := Copy_Common and Copy_Src and Copy_Lib and Build ("fast") and Restart ("prod");
+         Result := Copy_Common and Copy_Src and Copy_Lib and Build ("fast") and Restart (Config.Remote_Prod_Dir);
       elsif Config.Action = "dev_save_copy_build_full_restart" then
-         Result := Copy_Common and Copy_Src and Copy_Lib and Build ("full") and Restart ("dev");
+         Result := Copy_Common and Copy_Src and Copy_Lib and Build ("full") and Restart (Config.Remote_Dev_Dir);
       elsif Config.Action = "prod_save_copy_build_full_restart" then
-         Result := Copy_Common and Copy_Src and Copy_Lib and Build ("full") and Restart ("prod");
+         Result := Copy_Common and Copy_Src and Copy_Lib and Build ("full") and Restart (Config.Remote_Prod_Dir);
       else
          Msg.Info ("No action given");
       end if;
@@ -374,6 +378,11 @@ begin
    Finalize;
 
 exception
+
+   --  -h or --help switches
+   when GCL.Exit_From_Command_Line =>
+      --Help;
+      GOL.OS_Exit (1);
 
    --  Runtime errors
    when Error : others =>
