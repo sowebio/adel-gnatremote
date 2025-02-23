@@ -40,7 +40,7 @@ separate (GnatRemote) package body Ini is
    begin
 
       --  Settings
-      Prg.Set_Version (0, 8);
+      Prg.Set_Version (0, 9);
 
       Prg.Set_Handler_Ctrl_C (On);
       Sys.Set_Memory_Monitor (On);
@@ -87,7 +87,7 @@ separate (GnatRemote) package body Ini is
       Config.Action := From_Latin_1 (Gcl_Action.all);
 
       if Gcl_Check_Error_Trace then
-         Msg.Info (Prg.Name & ".Init.App > Exception test trigered by a raise exception");
+         Msg.Error (Prg.Name & ".Init.App > Exception test trigered by a raise exception");
          Raise_Exception;
       end if;
 
@@ -155,8 +155,8 @@ separate (GnatRemote) package body Ini is
          Config.Project_Name := Cfg.Get ("Project", "Name");
 
          Config.Program_Name := Cfg.Get ("Program", "Name");
+         Config.Program_Name_Full := Config.Project_Name & "_" & Cfg.Get ("Program", "Name");
          Config.Program_Sources_Dir := Cfg.Get ("Program", "Sources_Dir");
-         Config.Program_Libraries_Dir := Cfg.Get ("Program", "Libraries_Dir");
          Config.Program_Objects_Dir := Cfg.Get ("Program", "Objects_Dir");
          Config.Program_Binary_Dir := Cfg.Get ("Program", "Binary_Dir");
 
